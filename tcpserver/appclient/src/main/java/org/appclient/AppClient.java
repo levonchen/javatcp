@@ -27,6 +27,7 @@ public class AppClient {
 		
 		AppNetwork.register(client);
 		
+		addListener(client);
 
 		// Request the host from the user.
 		String input = (String)JOptionPane.showInputDialog(null, "Host:", "Connect to chat server", JOptionPane.QUESTION_MESSAGE,

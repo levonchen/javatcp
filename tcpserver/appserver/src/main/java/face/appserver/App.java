@@ -22,6 +22,10 @@ public class App
     	
     	try {
     		
+    		MongodbApp.Instance().init();
+    		
+    		MongodbApp.Instance().insert();
+    		
 			new AppServer();
 			
 		} catch (IOException e) {

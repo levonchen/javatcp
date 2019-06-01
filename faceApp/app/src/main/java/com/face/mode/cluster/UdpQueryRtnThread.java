@@ -1,18 +1,18 @@
 package com.face.mode.cluster;
 
-/**
- * 2 functions support:
- * 1: send query broadcast to all the other machine in the same domain
- * 2: receive query check from the other
- */
-public class UdpQueryThread extends Thread {
+
+import android.os.Message;
+
+import com.face.faceobject.FaceInfo;
+
+public class UdpQueryRtnThread extends Thread {
 
     private String dstAddress;
     private int dstPort;
     private UdpReturnHandler Handler = null;
     private boolean running = false;
 
-    public UdpQueryThread(String addr, int port, UdpReturnHandler handler)
+    public UdpQueryRtnThread(String addr, int port, UdpReturnHandler handler)
     {
         super();
 
@@ -26,5 +26,8 @@ public class UdpQueryThread extends Thread {
         this.running = running;
     }
 
-
+    private void sendQueryReturn(FaceInfo obj)
+    {
+        Handler.sendMessage(Message.obtain(Handler,UdpReturnHandler.Rtn_Query_Result,obj));
+    }
 }

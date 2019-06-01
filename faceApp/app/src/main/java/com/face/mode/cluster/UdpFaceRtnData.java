@@ -1,18 +1,18 @@
 package com.face.mode.cluster;
 
-public class UdpFaceData {
+public class UdpFaceRtnData {
     public byte[] Name = new byte[50];
     public byte[] CardId = new byte[50];
 
     public  int PicItemLength = 0;
     public byte[] Picture = new byte[3000];
 
-    public final int IntLength = 4;
-    public final int NameLength = 50;
-    public final int CardIdLength = 50;
-    public final int PicLength = 3000;
+    public final static int IntLength = 4;
+    public final static int NameLength = 50;
+    public final static int CardIdLength = 50;
+    public final static int PicLength = 3000;
 
-    public final  int TotalLength = NameLength +CardIdLength +  IntLength + PicLength;
+    public final  static int TotalLength = NameLength +CardIdLength +  IntLength + PicLength;
 
 
     public void setName(String name)
@@ -63,7 +63,7 @@ public class UdpFaceData {
         return "";
     }
 
-    public byte[] ToByte()
+    public byte[] ToBytes()
     {
         byte[] ret = new byte[TotalLength];
 

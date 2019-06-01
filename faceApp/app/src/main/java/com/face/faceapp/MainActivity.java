@@ -1,5 +1,6 @@
 package com.face.faceapp;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -11,6 +12,7 @@ import android.view.MenuItem;
 import android.widget.EditText;
 
 import com.face.faceobject.FaceSetting;
+import com.face.services.ClusterService;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -51,6 +53,18 @@ public class MainActivity extends AppCompatActivity {
         mFaceSetting.setIP(ip);
 
         mFaceSetting.saveData(this);
+    }
+
+    public void onStartClusterServiceClicked(View view)
+    {
+        Intent startIntent = new Intent(this, ClusterService.class);
+        startService(startIntent);
+    }
+
+    public void onEndClusterServiceClicked(View view)
+    {
+        Intent stopIntent = new Intent(this,ClusterService.class);
+        stopService(stopIntent);
     }
 
     @Override

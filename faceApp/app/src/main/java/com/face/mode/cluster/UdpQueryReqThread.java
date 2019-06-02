@@ -1,5 +1,6 @@
 package com.face.mode.cluster;
 
+import android.net.wifi.WifiManager;
 import android.util.Log;
 
 import java.io.IOException;
@@ -20,31 +21,44 @@ public class UdpQueryReqThread extends Thread {
     private UdpFaceReqData ReqObj;
     private DatagramSocket socket;
     private InetAddress address;
-    public UdpQueryReqThread(String addr,byte[] inputCharacteristiDatas)
+
+    WifiManager wifiManager;
+    private static WifiManager.MulticastLock lock;
+
+    public UdpQueryReqThread(WifiManager wifimanager,byte[] inputCharacteristiDatas)
     {
         super();
-        dstAddress = addr;
+        dstAddress = UdpCommonSetting.IP;
 
         ReqObj = new UdpFaceReqData();
         ReqObj.setCharacteristic(inputCharacteristiDatas);
+
+        wifiManager = wifimanager;
+        this.lock= wifimanager.createMulticastLock("UdpQueryReqThread");
     }
+
 
 
     @Override
     public void run()
     {
         try{
+            Log.d("UdpQueryReqThread"," sending query:" + dstAddress);
             socket = new DatagramSocket();
+            socket.setBroadcast(true);
             address = InetAddress.getByName(dstAddress);
 
             byte[] buf = ReqObj.getCharacteristic();
 
             DatagramPacket packet;
 
+            this.lock.acquire();
             packet = new DatagramPacket(buf, buf.length, address, UdpCommonSetting.ReceiveQueryPort);
-            socket.send(packet);
 
-            Log.d("QueryReqThread Send","succeed");
+            socket.send(packet);
+            this.lock.release();
+
+            Log.d("UdpQueryReqThread"," send succeed");
 
         }catch (SocketException e) {
             e.printStackTrace();

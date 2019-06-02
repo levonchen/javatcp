@@ -1,5 +1,7 @@
 package com.face.mode.cluster;
 
+import com.face.faceobject.FaceInfo;
+
 public class UdpFaceRtnData {
     public byte[] Name = new byte[50];
     public byte[] CardId = new byte[50];
@@ -40,7 +42,7 @@ public class UdpFaceRtnData {
         return new String(CardId);
     }
 
-    public String InitFromBytes(byte[] inputs)
+    public String FromBytes(byte[] inputs)
     {
         if(inputs.length != TotalLength)
         {

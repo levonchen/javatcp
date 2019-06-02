@@ -7,7 +7,13 @@ public class UdpFaceReqData {
 
     public void setCharacteristic(byte[] datas)
     {
-        System.arraycopy(datas,0,characteristic,0,length);
+        characteristic = new byte[128];
+        for(int i = 0;i < length; i++)
+        {
+            characteristic[i] = '\0';
+        }
+        int nLenght = Math.min(datas.length,length);
+        System.arraycopy(datas,0,characteristic,0,nLenght);
     }
 
     public byte[] getCharacteristic()

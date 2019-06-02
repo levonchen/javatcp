@@ -11,4 +11,6 @@ public final class UdpCommonSetting {
 
     //从发出请求到收到回复时间的最大延迟时间
     public  static final int WaitingTimout = 500;
+
+    public static final  String IP = "192.169.1.255";
 }

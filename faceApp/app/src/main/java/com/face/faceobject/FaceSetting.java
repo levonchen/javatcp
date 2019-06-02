@@ -56,7 +56,15 @@ public class FaceSetting implements Serializable {
         try{
             ObjectInput in;
 
+            String fileName = mFolder.getPath() + File.separator + "faceSetting.data";
+            File file = new File(fileName);
+            if(!file.exists())
+            {
+                return setting;
+            }
+
             FileInputStream fileIn = new FileInputStream(mFolder.getPath() + File.separator + "faceSetting.data");
+
             in = new ObjectInputStream(fileIn);
 
             setting = (FaceSetting)in.readObject();

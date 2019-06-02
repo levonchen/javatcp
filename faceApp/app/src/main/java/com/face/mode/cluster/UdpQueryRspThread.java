@@ -1,5 +1,11 @@
 package com.face.mode.cluster;
 
+import android.net.wifi.WifiManager;
+import android.util.Log;
+
+import com.face.faceobject.FaceInfo;
+import com.face.faceobject.FaceList;
+
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -22,10 +28,13 @@ public class UdpQueryRspThread extends Thread {
 
     private DatagramSocket socket;
     private InetAddress address;
-    public UdpQueryRspThread( )
+    WifiManager wifiManager;
+    private static WifiManager.MulticastLock lock;
+    public UdpQueryRspThread(WifiManager wifimanager )
     {
         super();
-
+        wifiManager = wifimanager;
+        this.lock= wifimanager.createMulticastLock("UdpQueryRspThread");
     }
 
     public void setRunning(boolean running)
@@ -37,13 +46,23 @@ public class UdpQueryRspThread extends Thread {
     public void run()
     {
         try{
+
+            Log.d("UdpQueryRspThread ","start run");
             socket = new DatagramSocket(UdpCommonSetting.ReceiveQueryPort);
 
             byte[] buf = new byte[UdpFaceReqData.length];
             while (running){
 
+                Log.d("UdpQueryRspThread"," waiting receive ");
+
+
+                this.lock.acquire();
                 DatagramPacket msgPackage = new DatagramPacket(buf,buf.length);
                 socket.receive(msgPackage);
+
+                this.lock.release();
+
+                Log.d("UdpQueryRspThread ",new String(buf));
 
                 InetAddress rtnAddress = msgPackage.getAddress();
                 UdpFaceReqData dtObj = new UdpFaceReqData();
@@ -66,12 +85,24 @@ public class UdpQueryRspThread extends Thread {
     private void  sendRtnToQueryTerminal(InetAddress destAddress, UdpFaceReqData qryObj){
 
         try {
+
+                Log.d("UdpQueryRspThread "," start response:" + destAddress.getHostAddress());
+                byte[] datas = qryObj.getCharacteristic();
+                String queryName = new String(datas);
+                queryName = queryName.trim();
+                FaceInfo findObj = FaceList.SearchInfo(queryName);
+                if(findObj == null)
+                {
+                    Log.d("UdpQueryRspThread ","Not found" + queryName);
+                    return;
+                }
+
                 DatagramSocket sendSocket = new DatagramSocket();
 
                 UdpFaceRtnData rtnData = new UdpFaceRtnData();
 
-                rtnData.setName("测试");
-                rtnData.setCardId("01234567899876543210");
+                rtnData.setName(findObj.Name);
+                rtnData.setCardId(findObj.CardId);
 
                 //TODO: add picture
 
@@ -79,8 +110,13 @@ public class UdpQueryRspThread extends Thread {
 
                  DatagramPacket sendPacket = new DatagramPacket(buf, UdpFaceRtnData.TotalLength, destAddress ,UdpCommonSetting.ReceiveRtnPort);// 创建发送类型的数据报：  
 
+                this.lock.acquire();
                 sendSocket.send(sendPacket); // 通过套接字发送数据
+            this.lock.release();
                 sendSocket.close();
+
+                 Log.d("UdpQueryRspThread"," Response succeed");
+
              } catch (Exception e) {
                 e.printStackTrace();
              }

@@ -102,6 +102,7 @@ public class MainActivity extends AppCompatActivity implements IQueryReturnHandl
         tcpClient.start();
 
 
+
         Log.d("good","");
     }
 

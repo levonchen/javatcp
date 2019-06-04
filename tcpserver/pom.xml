@@ -25,7 +25,6 @@
   
   <modules>
   	<module>appserver</module>
-  	<module>kryonet</module>
   	<module>appclient</module>
   	<module>appcommon</module>
   </modules>

@@ -22,9 +22,9 @@ public class App
     	
     	try {
     		
-    		MongodbApp.Instance().init();
+    		//MongodbApp.Instance().init();
     		
-    		MongodbApp.Instance().insert();
+    		//MongodbApp.Instance().insert();
     		
 			new AppServer();
 			

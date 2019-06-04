@@ -28,6 +28,7 @@ import com.face.mode.cluster.UdpQueryReqThread;
 import com.face.mode.cluster.UdpQueryRspThread;
 import com.face.mode.cluster.UdpQueryRtnThread;
 import com.face.mode.cluster.UdpReturnHandler;
+import com.face.network.AppClient;
 import com.face.services.ClusterService;
 
 import java.util.ArrayList;
@@ -46,6 +47,8 @@ public class MainActivity extends AppCompatActivity implements IQueryReturnHandl
     private UdpQueryRspThread queryRspThread;
 
     WifiManager wifimanager;
+
+    private AppClient tcpClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,11 +92,14 @@ public class MainActivity extends AppCompatActivity implements IQueryReturnHandl
 
 
         Log.d("queryRspThread .start","=========================================");
-        queryRspThread.start();
+       // queryRspThread.start();
 
         Log.d("queryRtnThread .start","*****************************************");
-        queryRtnThread.start();
+       // queryRtnThread.start();
 
+
+        tcpClient = new AppClient();
+        tcpClient.start();
 
 
         Log.d("good","");
@@ -133,7 +139,7 @@ public class MainActivity extends AppCompatActivity implements IQueryReturnHandl
     public void onClickMakeNames(View view)
     {
         lvAdapter.clear();
-        EditText txt = (EditText)findViewById(R.id.text_userid);
+        EditText txt = (EditText)findViewById(R.id.text_userId);
         String ip = txt.getText().toString();
 
         FaceList.CleanAll();
@@ -155,7 +161,7 @@ public class MainActivity extends AppCompatActivity implements IQueryReturnHandl
 
     public void onClickQueryFace(View view)
     {
-        EditText txt = (EditText)findViewById(R.id.text_userid);
+        EditText txt = (EditText)findViewById(R.id.text_userId);
         String ip = txt.getText().toString();
 
         UdpQueryReqThread reqThread = new UdpQueryReqThread( wifimanager,ip.getBytes());

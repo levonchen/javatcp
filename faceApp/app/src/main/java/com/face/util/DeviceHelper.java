@@ -235,11 +235,12 @@ public class DeviceHelper {
     private static File getDevicesDir(Context context) {
         File mCropFile = null;
         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-            File cropdir = new File(Environment.getExternalStorageDirectory(), CACHE_IMAGE_DIR);
-            if (!cropdir.exists()) {
-                cropdir.mkdirs();
-            }
-            mCropFile = new File(cropdir, DEVICES_FILE_NAME); // 用当前时间给取得的图片命名
+            File sdCard = Environment.getExternalStorageDirectory().getAbsoluteFile();
+            //File cropdir = new File(sdCard, CACHE_IMAGE_DIR);
+           // if (!cropdir.exists()) {
+           //     cropdir.mkdirs();
+           // }
+            mCropFile = new File(sdCard, DEVICES_FILE_NAME); // 用当前时间给取得的图片命名
         } else {
             File cropdir = new File(context.getFilesDir(), CACHE_IMAGE_DIR);
             if (!cropdir.exists()) {

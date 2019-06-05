@@ -30,6 +30,8 @@ import com.face.mode.cluster.UdpQueryRtnThread;
 import com.face.mode.cluster.UdpReturnHandler;
 import com.face.network.AppClient;
 import com.face.services.ClusterService;
+import com.face.util.DeviceHelper;
+import com.face.util.PermisionUtils;
 
 import java.util.ArrayList;
 
@@ -98,10 +100,17 @@ public class MainActivity extends AppCompatActivity implements IQueryReturnHandl
        // queryRtnThread.start();
 
 
-        tcpClient = new AppClient();
-        tcpClient.start();
+        //tcpClient = new AppClient();
+        //tcpClient.start();
 
 
+        PermisionUtils.verifyStoragePermissions(this);
+
+
+        String readDeviceID = DeviceHelper.getDeviceId(this);
+
+        EditText txt = (EditText)findViewById(R.id.edit_Qry_Result);
+        txt.setText(readDeviceID);
 
         Log.d("good","");
     }

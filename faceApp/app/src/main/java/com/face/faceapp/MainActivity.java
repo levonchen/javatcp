@@ -112,7 +112,9 @@ public class MainActivity extends AppCompatActivity implements IQueryReturnHandl
         EditText txt = (EditText)findViewById(R.id.edit_Qry_Result);
         txt.setText(readDeviceID);
 
-        Log.d("good","");
+        String result = DeviceHelper.GenerateLicense(readDeviceID);
+
+        Log.d("good",readDeviceID  + "  "  +  result);
     }
 
 

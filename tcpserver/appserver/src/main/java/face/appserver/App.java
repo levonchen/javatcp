@@ -9,6 +9,8 @@ import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
 import com.esotericsoftware.minlog.Log;
 
+import face.utils.LicenseUtil;
+
 
 /**
  * Hello world!
@@ -25,6 +27,9 @@ public class App
     		//MongodbApp.Instance().init();
     		
     		//MongodbApp.Instance().insert();
+    		String result = LicenseUtil.GenerateLicense("f81de0fb4569c602a9db466f120ddd1b");
+    		
+    		Log.debug(result);
     		
 			new AppServer();
 			

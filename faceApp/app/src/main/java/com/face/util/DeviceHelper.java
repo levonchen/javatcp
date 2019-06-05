@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Environment;
 import android.telephony.TelephonyManager;
+import android.util.Base64;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -20,6 +21,11 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.security.MessageDigest;
 import java.util.UUID;
+
+import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.DESKeySpec;
 
 /**
  * @author liangjun on 2018/1/21.
@@ -181,6 +187,33 @@ public class DeviceHelper {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static String GenerateLicense(String clearText){
+        try {
+            //DESKeySpec keySpec = new DESKeySpec(
+             //       MyConstant.PASSWORD_ENC_SECRET.getBytes("UTF-8"));
+
+            //用自己加密自己
+            DESKeySpec keySpec = new DESKeySpec(clearText.getBytes("UTF-8"));
+            SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("DES");
+            SecretKey key = keyFactory.generateSecret(keySpec);
+
+            Cipher cipher = Cipher.getInstance("DES");
+            cipher.init(Cipher.ENCRYPT_MODE, key);
+
+            byte[] result = cipher.doFinal(clearText.getBytes("UTF-8"));
+
+            String encrypedPwd = Base64.encodeToString(result, Base64.DEFAULT);
+            //encrypedPwd = encrypedPwd.trim();
+            //Interesting here, the android Base64 will add a \n on the last word.
+            //use it as a security.
+            String md5 = getMD5(encrypedPwd,true);
+            return md5;
+            //return encrypedPwd;
+        } catch (Exception e) {
+        }
+        return clearText;
     }
 
     /**

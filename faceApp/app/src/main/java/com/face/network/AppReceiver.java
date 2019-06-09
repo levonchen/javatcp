@@ -21,10 +21,10 @@ public class AppReceiver {
     private Map<Integer,ReceiveBase> commandToReceive = new HashMap<Integer, ReceiveBase>();
     private CTPReceiveHandler Handler;
 
-    public AppReceiver(Client ct, CTPReceiveHandler mainContext)
+    public AppReceiver(Client ct)
     {
         client = ct;
-        Handler = mainContext;
+        Handler = CTPReceiveHandler.getInstance();
         registerCallback();
     }
 

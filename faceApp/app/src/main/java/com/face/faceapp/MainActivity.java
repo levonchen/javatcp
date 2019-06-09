@@ -37,7 +37,7 @@ import org.appcommon.AppNetwork;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity implements IQueryReturnHandler, ITCPReceiveHandler {
+public class MainActivity extends AppCompatActivity implements IQueryReturnHandler {
 
     private FaceSetting mFaceSetting = null;
 
@@ -55,7 +55,6 @@ public class MainActivity extends AppCompatActivity implements IQueryReturnHandl
     private String DeviceId = "-----";
 
     private AppClient tcpClient;
-    private CTPReceiveHandler tcpHandler;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -104,8 +103,37 @@ public class MainActivity extends AppCompatActivity implements IQueryReturnHandl
        // queryRtnThread.start();
 
 
-        tcpHandler = new CTPReceiveHandler(this);
-        tcpClient = new AppClient(tcpHandler);
+        CTPReceiveHandler.getInstance().AddListener(this, AppNetwork.C_Rsp_Login, new ITCPReceiveHandler() {
+            @Override
+            public void OnReceived(AppNetwork.FaceObjBase objField) {
+                if(objField instanceof AppNetwork.RspLogin) {
+                    AppNetwork.RspLogin field = (AppNetwork.RspLogin)objField;
+                    if (field != null) {
+                        Toast.makeText(MainActivity.this, "received login:" + field.result, Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(MainActivity.this, "received  * NULL * RspLogin broadcast,", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+        });
+
+        CTPReceiveHandler.getInstance().AddListener(this, AppNetwork.C_Rtn_Login, new ITCPReceiveHandler() {
+            @Override
+            public void OnReceived(AppNetwork.FaceObjBase objField) {
+                if(objField instanceof AppNetwork.RtnLogin) {
+                    AppNetwork.RtnLogin field = (AppNetwork.RtnLogin)objField;
+                    if (field != null) {
+
+                        EditText txt = (EditText) findViewById(R.id.edit_Qry_Result);
+                        txt.setText(field.msg);
+                    } else {
+                        Toast.makeText(MainActivity.this, "received  * NULL * RtnLogin broadcast,", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+        });
+
+        tcpClient = new AppClient();
         tcpClient.start();
 
 
@@ -240,29 +268,4 @@ public class MainActivity extends AppCompatActivity implements IQueryReturnHandl
 
         return super.onOptionsItemSelected(item);
     }
-
-    @Override
-    public void OnResLogin(AppNetwork.RspLogin field) {
-        if(field != null) {
-            Toast.makeText(this, "received login:" + field.result, Toast.LENGTH_SHORT).show();
-        }
-        else {
-            Toast.makeText(this, "received  * NULL * RspLogin broadcast,", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    @Override
-    public void OnRtnLogin(AppNetwork.RtnLogin field) {
-        if(field != null) {
-
-            EditText txt = (EditText)findViewById(R.id.edit_Qry_Result);
-            txt.setText(field.Id + "::" +field.msg);
-        }
-        else {
-            Toast.makeText(this, "received  * NULL * RtnLogin broadcast,", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-
-
 }

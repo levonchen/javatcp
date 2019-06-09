@@ -21,11 +21,8 @@ public class AppClient extends Thread {
     //处理从服务器端回收来的消息
     private AppReceiver receiver;
 
-    private CTPReceiveHandler Handler;
-
-    public AppClient(CTPReceiveHandler handler)
+    public AppClient()
     {
-        Handler = handler;
     }
 
                      @Override
@@ -61,7 +58,7 @@ public class AppClient extends Thread {
     }
 
     private void addListener(final Client client) {
-        receiver = new AppReceiver(client,Handler);
+        receiver = new AppReceiver(client);
 
         client.addListener(new Listener() {
             public void connected (Connection connection) {

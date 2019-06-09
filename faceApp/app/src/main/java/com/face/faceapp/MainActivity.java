@@ -9,16 +9,13 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
+import android.widget.Toast;
 
 import com.face.faceobject.FaceInfo;
 import com.face.faceobject.FaceList;
@@ -29,13 +26,18 @@ import com.face.mode.cluster.UdpQueryRspThread;
 import com.face.mode.cluster.UdpQueryRtnThread;
 import com.face.mode.cluster.UdpReturnHandler;
 import com.face.network.AppClient;
+import com.face.network.CTPReceiveHandler;
+import com.face.network.ITCPReceiveHandler;
 import com.face.services.ClusterService;
 import com.face.util.DeviceHelper;
 import com.face.util.PermisionUtils;
+import com.face.util.StringUtils;
+
+import org.appcommon.AppNetwork;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity implements IQueryReturnHandler {
+public class MainActivity extends AppCompatActivity implements IQueryReturnHandler, ITCPReceiveHandler {
 
     private FaceSetting mFaceSetting = null;
 
@@ -50,8 +52,10 @@ public class MainActivity extends AppCompatActivity implements IQueryReturnHandl
 
     WifiManager wifimanager;
 
-    private AppClient tcpClient;
+    private String DeviceId = "-----";
 
+    private AppClient tcpClient;
+    private CTPReceiveHandler tcpHandler;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -100,8 +104,9 @@ public class MainActivity extends AppCompatActivity implements IQueryReturnHandl
        // queryRtnThread.start();
 
 
-        //tcpClient = new AppClient();
-        //tcpClient.start();
+        tcpHandler = new CTPReceiveHandler(this);
+        tcpClient = new AppClient(tcpHandler);
+        tcpClient.start();
 
 
         PermisionUtils.verifyStoragePermissions(this);
@@ -112,9 +117,26 @@ public class MainActivity extends AppCompatActivity implements IQueryReturnHandl
         EditText txt = (EditText)findViewById(R.id.edit_Qry_Result);
         txt.setText(readDeviceID);
 
+        if(!StringUtils.isBlank(readDeviceID))
+        {
+            DeviceId = readDeviceID;
+        }
+
         String result = DeviceHelper.GenerateLicense(readDeviceID);
 
         Log.d("good",readDeviceID  + "  "  +  result);
+    }
+
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+    }
+
+    @Override
+    public void onPause()
+    {
+        super.onPause();
     }
 
 
@@ -178,6 +200,23 @@ public class MainActivity extends AppCompatActivity implements IQueryReturnHandl
 
         UdpQueryReqThread reqThread = new UdpQueryReqThread( wifimanager,ip.getBytes());
         reqThread.start();
+
+    }
+
+    public void onClickSendLogin(View view)
+    {
+
+        new Thread("runReqLogin") {
+            public void run () {
+                try {
+                    tcpClient.ReqLogin(DeviceId);
+                    // Server communication after connection can go here, or in Listener#connected().
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }.start();
+
     }
 
     @Override
@@ -201,5 +240,29 @@ public class MainActivity extends AppCompatActivity implements IQueryReturnHandl
 
         return super.onOptionsItemSelected(item);
     }
+
+    @Override
+    public void OnResLogin(AppNetwork.RspLogin field) {
+        if(field != null) {
+            Toast.makeText(this, "received login:" + field.result, Toast.LENGTH_SHORT).show();
+        }
+        else {
+            Toast.makeText(this, "received  * NULL * RspLogin broadcast,", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void OnRtnLogin(AppNetwork.RtnLogin field) {
+        if(field != null) {
+
+            EditText txt = (EditText)findViewById(R.id.edit_Qry_Result);
+            txt.setText(field.Id + "::" +field.msg);
+        }
+        else {
+            Toast.makeText(this, "received  * NULL * RtnLogin broadcast,", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
 
 }

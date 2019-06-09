@@ -12,6 +12,8 @@ import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
 
+import face.command.CommandFactory;
+
 
 public class AppServer {
 	Server server;
@@ -48,6 +50,21 @@ public class AppServer {
 			public void received (Connection c, Object object) {
 				// We know all connections for this server are actually ChatConnections.
 				AppConnection connection = (AppConnection)c;
+				
+				System.out.println("Received Message:" + c.getID());
+				
+				if(object instanceof AppNetwork.FaceObjBase)
+				{
+					AppNetwork.FaceObjBase faceObj = ((AppNetwork.FaceObjBase) object);
+					
+					face.command.ICommand cmd = CommandFactory.getInstance().GetExecutor(faceObj.Command);
+					face.command.Context ct = new face.command.Context();
+					ct.connect = c;
+					ct.field = faceObj;
+					ct.server = server;
+					cmd.OnExecute(ct);
+					return;
+				}
 
 				if (object instanceof RegisterName) {
 					// Ignore the object if a client has already registered a name. This is

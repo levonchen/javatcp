@@ -95,6 +95,19 @@
         android:onClick="onClickQueryFace"
         />
 
+    <Button
+        android:id="@+id/buttonSendTCP"
+        android:text="查询"
+        android:textColor="#ffffff"
+        android:textSize="18sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toRightOf="@id/button2"
+        android:layout_marginLeft="10dp"
+        app:layout_constraintTop_toTopOf="@id/button_box"
+        android:onClick="onClickSendLogin"
+        />
+
     <EditText
         android:id="@+id/edit_Qry_Result"
         android:layout_width="wrap_content"

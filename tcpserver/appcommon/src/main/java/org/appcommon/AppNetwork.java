@@ -1,5 +1,7 @@
 package org.appcommon;
 
+import java.io.Serializable;
+
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.EndPoint;
 
@@ -30,7 +32,11 @@ public class AppNetwork {
 	static public void register (EndPoint endPoint) {
 		Kryo kryo = endPoint.getKryo();
 		
+		kryo.register(FaceObjBase.class);
 		kryo.register(ReqLogin.class);
+		kryo.register(RspLogin.class);
+		kryo.register(RtnLogin.class);
+		
 		kryo.register(ReqAddFaceInfo.class);
 		
 		
@@ -43,8 +49,10 @@ public class AppNetwork {
 	
 	static private int S_Seq = 0;
 	
-	static public class FaceObjBase
-	{
+	
+	@SuppressWarnings("serial")
+	static public class FaceObjBase implements Serializable 
+	{		
 		public int Command;
 		public int Seq;
 		
@@ -69,10 +77,21 @@ public class AppNetwork {
 	{
 		public RspLogin()
 		{
-			this.Command = AppNetwork.C_Req_Login;
+			this.Command = AppNetwork.C_Rsp_Login;
 		}
 		
 		public boolean result;
+	}
+	
+	static public class RtnLogin extends FaceObjBase
+	{
+		public RtnLogin()
+		{
+			this.Command = AppNetwork.C_Rtn_Login;
+		}
+		
+		public String Id;
+		public String msg;
 	}
 	
 	static public class ReqAddFaceInfo extends FaceObjBase

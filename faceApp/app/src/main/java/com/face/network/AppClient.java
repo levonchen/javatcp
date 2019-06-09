@@ -5,14 +5,30 @@ import android.util.Log;
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
-import com.face.network.AppNetwork.*;
+import com.face.faceapp.MainActivity;
+
+import org.appcommon.AppNetwork;
+import org.appcommon.AppNetwork.*;
 
 import java.io.IOException;
 
 public class AppClient extends Thread {
 
     private Client client;
-    @Override
+
+    private static String IP = "192.168.1.5";  //"192.168.10.55"
+
+    //处理从服务器端回收来的消息
+    private AppReceiver receiver;
+
+    private CTPReceiveHandler Handler;
+
+    public AppClient(CTPReceiveHandler handler)
+    {
+        Handler = handler;
+    }
+
+                     @Override
     public void run()
     {
         try{
@@ -21,9 +37,7 @@ public class AppClient extends Thread {
 
             client = new Client();
             //client.start();
-
             AppNetwork.register(client);
-
             addListener(client);
 
             //client.connect(5000, "192.168.10.55", AppNetwork.port);
@@ -33,7 +47,7 @@ public class AppClient extends Thread {
                 public void run () {
                     try {
                         client.start();
-                        client.connect(5000, "192.168.10.55", AppNetwork.port);
+                        client.connect(5000, AppClient.IP, AppNetwork.port);
                         // Server communication after connection can go here, or in Listener#connected().
                     } catch (IOException ex) {
                         ex.printStackTrace();
@@ -47,6 +61,8 @@ public class AppClient extends Thread {
     }
 
     private void addListener(final Client client) {
+        receiver = new AppReceiver(client,Handler);
+
         client.addListener(new Listener() {
             public void connected (Connection connection) {
 
@@ -60,6 +76,13 @@ public class AppClient extends Thread {
             public void received (Connection connection, Object object) {
 
                 Log.d("AppClient","Received message");
+
+                if(object instanceof AppNetwork.FaceObjBase)
+                {
+                    AppNetwork.FaceObjBase faceObj = (AppNetwork.FaceObjBase)object;
+                    receiver.onHandleReceived(connection,faceObj);
+                    return;
+                }
 
                 if (object instanceof UpdateNames) {
                     UpdateNames updateNames = (UpdateNames)object;
@@ -81,4 +104,10 @@ public class AppClient extends Thread {
         });
     }
 
+
+    public void ReqLogin(String id){
+        AppNetwork.ReqLogin field = new AppNetwork.ReqLogin();
+        field.Id = id;
+        client.sendTCP(field);
+    }
 }

@@ -11,21 +11,46 @@ import org.appcommon.AppNetwork;
 import org.appcommon.AppNetwork.*;
 
 import java.io.IOException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class AppClient extends Thread {
 
     private Client client;
 
-    private static String IP = "192.168.1.5";  //"192.168.10.55"
+    private static String IP =  "192.168.10.55";  //"192.168.1.5";
 
     //处理从服务器端回收来的消息
     private AppReceiver receiver;
 
+    //通过线程发送req 请求到服务度
+    private ExecutorService reqPool;
+
     public AppClient()
     {
+        reqPool = Executors.newSingleThreadExecutor();
     }
 
-                     @Override
+    //call to stop AppReceiver
+    public void Stop()
+    {
+        reqPool.shutdown(); // Disable new tasks from being submitted
+        try {
+            // Wait a while for existing tasks to terminate
+            if (!reqPool.awaitTermination(60, TimeUnit.MICROSECONDS)) {
+                reqPool.shutdownNow(); // Cancel currently executing tasks
+                // Wait a while for tasks to respond to being cancelled
+                if (!reqPool.awaitTermination(60, TimeUnit.MICROSECONDS))
+                    System.err.println("Pool did not terminate");
+            }
+        } catch (InterruptedException ie) {
+            // (Re-)Cancel if current thread also interrupted
+            reqPool.shutdownNow();
+        }
+    }
+
+    @Override
     public void run()
     {
         try{
@@ -36,8 +61,6 @@ public class AppClient extends Thread {
             //client.start();
             AppNetwork.register(client);
             addListener(client);
-
-            //client.connect(5000, "192.168.10.55", AppNetwork.port);
 
 
             new Thread("Connect") {
@@ -102,9 +125,15 @@ public class AppClient extends Thread {
     }
 
 
-    public void ReqLogin(String id){
-        AppNetwork.ReqLogin field = new AppNetwork.ReqLogin();
-        field.Id = id;
-        client.sendTCP(field);
+    public void ReqLogin(final String id){
+
+        reqPool.execute(new Runnable() {
+            @Override
+            public void run() {
+                AppNetwork.ReqLogin field = new AppNetwork.ReqLogin();
+                field.Id = id;
+                client.sendTCP(field);
+            }
+        });
     }
 }

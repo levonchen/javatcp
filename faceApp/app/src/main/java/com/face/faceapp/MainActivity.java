@@ -167,6 +167,14 @@ public class MainActivity extends AppCompatActivity implements IQueryReturnHandl
         super.onPause();
     }
 
+    @Override
+    public void onDestroy()
+    {
+        super.onDestroy();
+
+        //call the stop the thread.
+        tcpClient.Stop();
+    }
 
     public void OnRtnQueryResult(FaceInfo face)
     {
@@ -234,16 +242,18 @@ public class MainActivity extends AppCompatActivity implements IQueryReturnHandl
     public void onClickSendLogin(View view)
     {
 
-        new Thread("runReqLogin") {
-            public void run () {
-                try {
-                    tcpClient.ReqLogin(DeviceId);
-                    // Server communication after connection can go here, or in Listener#connected().
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
-            }
-        }.start();
+//        new Thread("runReqLogin") {
+//            public void run () {
+//                try {
+//                    tcpClient.ReqLogin(DeviceId);
+//                    // Server communication after connection can go here, or in Listener#connected().
+//                } catch (Exception ex) {
+//                    ex.printStackTrace();
+//                }
+//            }
+//        }.start();
+
+        tcpClient.ReqLogin(DeviceId);
 
     }
 

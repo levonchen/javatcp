@@ -110,6 +110,8 @@ public class AppServer {
 					chatMessage.text = connection.name + " disconnected.";
 					server.sendToAllTCP(chatMessage);
 					updateNames();
+					
+					System.out.println("User:" + connection.name + " disconnected!");
 				}
 			}
         	

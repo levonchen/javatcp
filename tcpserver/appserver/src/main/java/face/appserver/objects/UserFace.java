@@ -1,11 +1,16 @@
 package face.appserver.objects;
 
+import java.util.Date;
+
 import org.bson.types.ObjectId;
 
 public class UserFace {
 	private ObjectId id;
 	private String name;
+	
+	//人员编号
 	private String userIdentify;
+	
 	private String cardNumber;
 	
 	//特征值
@@ -14,6 +19,11 @@ public class UserFace {
 	private byte[] userImage;
 	
 	private String ImageName;
+	
+	private Date createDate;
+	
+	//部门id
+	private String departmentId;
 	
 	
 	public ObjectId getId() {
@@ -63,6 +73,13 @@ public class UserFace {
 	}
 	public void setImageName(String imageName) {
 		ImageName = imageName;
+	}
+	
+	public Date getCreateDate() {
+		return createDate;
+	}
+	public void setCreateDate(Date createDate) {
+		this.createDate = createDate;
 	}
 	
 }

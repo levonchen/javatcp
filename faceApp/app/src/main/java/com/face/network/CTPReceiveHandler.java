@@ -73,19 +73,5 @@ public class CTPReceiveHandler extends Handler {
             ITCPReceiveHandler listener= entry.getValue();
             listener.OnReceived((AppNetwork.FaceObjBase)msg.obj);
         }
-
-//        switch (msg.what)
-//        {
-//            case AppNetwork.C_Rsp_Login:
-//                parent.OnResLogin((AppNetwork.RspLogin)msg.obj);
-//                break;
-//            case AppNetwork.C_Rtn_Login:
-//                parent.OnRtnLogin((AppNetwork.RtnLogin)msg.obj);
-//                break;
-//
-//                default:
-//                    Log.d("CTPReceiveHandler",msg.what + " Not Supported");
-//
-//        }
     }
 }

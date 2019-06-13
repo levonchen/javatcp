@@ -1,4 +1,4 @@
-package face.appserver;
+package face.appserver.objects;
 
 import org.bson.types.ObjectId;
 
@@ -7,6 +7,13 @@ public class UserFace {
 	private String name;
 	private String userIdentify;
 	private String cardNumber;
+	
+	//特征值
+	private byte[] feature;
+	
+	private byte[] userImage;
+	
+	private String ImageName;
 	
 	
 	public ObjectId getId() {
@@ -32,6 +39,30 @@ public class UserFace {
 	}
 	public void setCardNumber(String cardNumber) {
 		this.cardNumber = cardNumber;
+	}
+	
+	
+	public byte[] getFeature() {
+		return feature;
+	}
+	public void setFeature(byte[] feature) {
+		this.feature = feature;
+	}
+	
+	
+	public byte[] getUserImage() {
+		return userImage;
+	}
+	public void setUserImage(byte[] userImage) {
+		this.userImage = userImage;
+	}
+	
+	
+	public String getImageName() {
+		return ImageName;
+	}
+	public void setImageName(String imageName) {
+		ImageName = imageName;
 	}
 	
 }

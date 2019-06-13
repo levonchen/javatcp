@@ -17,6 +17,8 @@ import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
+import face.appserver.objects.UserFace;
+
 public class MongodbApp {
 	private static final MongodbApp instance = new MongodbApp();
 	

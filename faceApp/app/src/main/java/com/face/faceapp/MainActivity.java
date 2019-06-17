@@ -1,9 +1,12 @@
 package com.face.faceapp;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.PowerManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -12,6 +15,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -153,6 +157,7 @@ public class MainActivity extends AppCompatActivity implements IQueryReturnHandl
         String result = DeviceHelper.GenerateLicense(readDeviceID);
 
         Log.d("good",readDeviceID  + "  "  +  result);
+
     }
 
     @Override
@@ -192,6 +197,38 @@ public class MainActivity extends AppCompatActivity implements IQueryReturnHandl
         mFaceSetting.setIP(ip);
 
         mFaceSetting.saveData(this);
+    }
+
+    Handler mTimeHandler=new Handler();
+
+    public void turnOffScreen1()
+    {
+        WindowManager.LayoutParams params = getWindow().getAttributes();
+
+        // params.flags |= WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON;
+        params.screenBrightness = 0;
+        getWindow().setAttributes(params);
+    }
+    public void turnOnScrren1()
+    {
+        WindowManager.LayoutParams params = getWindow().getAttributes();
+
+        // params.flags |= WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON;
+        params.screenBrightness = -1;
+        getWindow().setAttributes(params);
+    }
+
+    public void onClickPowerManager(View view)
+    {
+        Log.d("PowerManager:","Start...");
+        turnOffScreen1();
+        mTimeHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                turnOnScrren1();
+            }
+        },5 * 1000);
+
     }
 
     public void onStartClusterServiceClicked(View view)

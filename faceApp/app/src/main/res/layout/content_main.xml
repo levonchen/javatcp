@@ -73,6 +73,18 @@
         android:onClick="onClickPowerManager"
         />
 
+    <Button
+        android:id="@+id/test_camera"
+        android:text="开/关"
+        android:textColor="#ffffff"
+        android:textSize="18sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toRightOf="@id/test_power"
+        android:layout_marginLeft="10dp"
+        app:layout_constraintTop_toTopOf="@id/first_button_box"
+        android:onClick="onClickTurnOnOffFlashlight"
+        />
 
 
     <EditText

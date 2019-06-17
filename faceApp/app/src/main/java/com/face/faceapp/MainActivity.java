@@ -1,14 +1,17 @@
 package com.face.faceapp;
 
-import android.annotation.TargetApi;
+
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.hardware.Camera;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.PowerManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -40,6 +43,7 @@ import com.face.util.StringUtils;
 import org.appcommon.AppNetwork;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements IQueryReturnHandler {
 
@@ -158,6 +162,12 @@ public class MainActivity extends AppCompatActivity implements IQueryReturnHandl
 
         Log.d("good",readDeviceID  + "  "  +  result);
 
+
+        if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            // here, Permission is not granted
+            ActivityCompat.requestPermissions(this, new String[] {android.Manifest.permission.CAMERA}, 50);
+        }
+
     }
 
     @Override
@@ -228,7 +238,49 @@ public class MainActivity extends AppCompatActivity implements IQueryReturnHandl
                 turnOnScrren1();
             }
         },5 * 1000);
+    }
 
+    private boolean mIsLight = false;
+    private Camera camera = null;
+    public void onClickTurnOnOffFlashlight(View view)
+    {
+        if(!mIsLight)
+        {
+            if (camera == null) {
+
+                camera = Camera.open();
+            }
+
+            camera.startPreview();
+            Camera.Parameters parameters = camera.getParameters();
+            List<String> flashModes = parameters.getSupportedFlashModes();
+            if (flashModes == null) {
+                return;
+            }
+            String flashMode = parameters.getFlashMode();
+            if (!flashMode.contains(Camera.Parameters.FLASH_MODE_TORCH)) {
+                parameters.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
+                camera.setParameters(parameters);
+                Toast.makeText(MainActivity.this, "打开手电筒成功", Toast.LENGTH_SHORT).show();
+            }
+
+            mIsLight = true;
+        }else
+        {
+            Camera.Parameters parameters = camera.getParameters();
+            List<String> flashModes = parameters.getSupportedFlashModes();
+            if (flashModes == null) {
+                return;
+            }
+            String flashMode = parameters.getFlashMode();
+            if (!flashMode.contains(Camera.Parameters.FLASH_MODE_OFF)) {
+                parameters.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
+                camera.setParameters(parameters);
+                Toast.makeText(MainActivity.this, "关闭手电筒成功", Toast.LENGTH_SHORT).show();
+            }
+
+            mIsLight = false;
+        }
     }
 
     public void onStartClusterServiceClicked(View view)
